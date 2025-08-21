@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mohan × Kairos • Neon Terminal</title>
+  <meta name="description" content="Mohan Dasarath Ram • Neon cyberpunk terminal with IST clock inside Earth, neon orbit, and glowing info" />
+  <style>
+    :root{
+      --bg:#050607;
+      --neon:#19ff90;
+      --neon2:#00ffaa;
+      --orange:#ff8c2b;
+      --orange-soft:#ffb170;
+      --blue:#29a3ff;
+      --panel: rgba(25,255,144,.06);
+      --panel-border: rgba(25,255,144,.45);
+      --shadow-neon: 0 0 22px rgba(25,255,144,.45), 0 0 60px rgba(25,255,144,.22);
+      --shadow-orange: 0 0 20px rgba(255,140,43,.55), 0 0 50px rgba(255,140,43,.3);
+      --shadow-blue: 0 0 26px rgba(41,163,255,.45), 0 0 60px rgba(41,163,255,.22);
+      --glass: rgba(255,255,255,.04);
+    }
+
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:#eafff6; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; overflow-x:hidden;
+    }
+
+    /* Background fog + scanlines */
+    .fog{position:fixed; inset:-25vmax; filter: blur(90px) saturate(140%); opacity:.35; pointer-events:none}
+    .fog:before,.fog:after{content:""; position:absolute; width:60vmax; height:60vmax; border-radius:50%}
+    .fog:before{left:6vmax; top:-6vmax; background:radial-gradient(closest-side, var(--neon), transparent 70%)}
+    .fog:after{right:6vmax; bottom:-6vmax; background:radial-gradient(closest-side, var(--neon2), transparent 70%)}
+    .scan{position:fixed; inset:0; pointer-events:none; background:repeating-linear-gradient(to bottom, rgba(255,255,255,.02) 0 1px, transparent 1px 3px); mix-blend-mode:soft-light; opacity:.2}
+
+    /* Constellations canvas */
+    canvas#sky{position:fixed; inset:0; pointer-events:none; opacity:.55}
+
+    /* Watermark K (background) */
+    .watermark{position:fixed; inset:0; display:grid; place-items:center; pointer-events:none; font-weight:900; font-size:42vmin; color:transparent; -webkit-text-stroke:2px rgba(41,163,255,.18); text-shadow:0 0 16px rgba(41,163,255,.18), 0 0 80px rgba(41,163,255,.12); opacity:0.06; transition: opacity .25s ease, transform .25s ease}
+    .watermark.active{opacity:0.32; transform:scale(1.02)}
+
+    /* Layout */
+    .wrap{width:min(1100px,94vw); margin:32px auto; padding: clamp(10px,2.2vw,26px); display:grid; gap:20px; align-items:center}
+    .center-col{display:flex; flex-direction:column; gap:20px; align-items:center}
+
+    /* Earth container (smaller) */
+    .orbit-wrap{ position:relative; width:min(320px,48vw); aspect-ratio:1/1; display:grid; place-items:center; z-index:5 }
+    .earth{ position:relative; width:44%; aspect-ratio:1/1; border-radius:50%; display:grid; place-items:center; overflow:visible; }
+    .earth .surface{
+      width:100%; height:100%; border-radius:50%; background:
+        radial-gradient(circle at 30% 30%, rgba(41,163,255,.18), transparent 40%),
+        radial-gradient(circle at 50% 60%, rgba(0,255,136,.08), transparent 60%),
+        linear-gradient(120deg, rgba(2,14,20,1) 0%, rgba(6,30,40,1) 100%);
+      border:1px solid rgba(41,163,255,.22);
+      box-shadow: 0 0 40px rgba(41,163,255,.12), inset 0 6px 30px rgba(0,0,0,.55);
+      position:relative; display:grid; place-items:center;
+    }
+
+    /* Clock inside Earth */
+    .clock-in-earth{ width:70%; padding:10px 12px; border-radius:999px; display:grid; place-items:center; text-align:center; background: radial-gradient(circle at 35% 30%, rgba(255,140,43,.14), rgba(255,140,43,.06)); border:1.4px solid rgba(255,140,43,.45); box-shadow: var(--shadow-orange); color:var(--orange); font-weight:700; font-size: clamp(16px, 3.6vw, 26px); letter-spacing:.6px }
+    .clock-in-earth small{ display:block; font-size:.55em; margin-top:6px; color:var(--orange-soft) }
+    @keyframes clockFlicker{ 0%,19%,21%,23%,80%,100%{ filter:brightness(1) } 20%,22%{ filter:brightness(.75) } }
+    .clock-in-earth{ animation: clockFlicker 4.6s infinite }
+
+    /* Orbit ring and moon */
+    .orbit-ring{ position:absolute; width:98%; height:98%; border-radius:50%; border:1.2px dashed rgba(41,163,255,.18); box-shadow:0 0 18px rgba(41,163,255,.08) inset }
+    .moon-track{ position:absolute; inset:6%; border-radius:50%; animation: rotateOrbit 10s linear infinite }
+    @keyframes rotateOrbit{ to{ transform: rotate(360deg) } }
+    .moon{ position:absolute; top:0; left:50%; transform: translate(-50%,-50%); width:18px; height:18px; border-radius:50%; background: radial-gradient(circle at 35% 35%, #fff, #cfefff 50%, #78b8ff 100%); box-shadow:0 0 12px rgba(41,163,255,.9), 0 0 28px rgba(41,163,255,.45); }
+    .moon-trail{ position:absolute; top:0; left:50%; transform: translate(-50%,-50%); width:36px; height:6px; border-radius:999px; background: linear-gradient(90deg, rgba(41,163,255,.0), rgba(41,163,255,.35), rgba(41,163,255,.0)); filter:blur(6px); opacity:.7 }
+
+    /* Big info panel (below earth) */
+    .info-panel{ width:min(880px,92vw); border-radius:14px; padding:22px 20px; background: linear-gradient(180deg, rgba(25,255,144,.03), rgba(25,255,144,.01)); border:1.2px solid rgba(25,255,144,.22); box-shadow: var(--shadow-neon); z-index:10 }
+    .info-title{ display:flex; align-items:center; gap:12px; margin-bottom:12px }
+    .info-title .dots{ display:flex; gap:8px }
+    .info-title .dot{ width:10px; height:10px; border-radius:50%; box-shadow:0 0 12px currentColor }
+    .info-title .red{ background:#ff5f56; color:#ff5f56 }
+    .info-title .yellow{ background:#ffbd2e; color:#ffbd2e }
+    .info-title .green{ background:#27c93f; color:#27c93f }
+
+    .info-lines{ font-size: clamp(16px, 2.4vw, 20px); line-height:1.6; color:#eafff6 }
+    .info-lines .label{ opacity:.76; margin-right:6px }
+    .info-lines .big{ font-weight:700 }
+    .info-lines .em{ color:var(--neon); text-shadow:var(--shadow-neon) }
+    .info-lines .em-blue{ color:var(--blue); text-shadow:var(--shadow-blue) }
+    .info-lines .em-orange{ color:var(--orange); text-shadow:var(--shadow-orange) }
+
+    /* glowing emoji styles */
+    .emoji{ display:inline-block; margin-left:6px }
+    .emoji.glow{ filter: drop-shadow(0 0 8px currentColor) drop-shadow(0 0 18px currentColor); animation: emojiPulse 2.6s ease-in-out infinite }
+    @keyframes emojiPulse{ 50%{ transform: translateY(-1px) scale(1.06); opacity:.95 } }
+
+    /* socials row */
+    .socials{ display:flex; gap:14px; justify-content:center; margin-top:14px }
+    .social{ display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:12px; color:#fff; text-decoration:none; background:var(--glass); border:1px solid rgba(255,255,255,.06); transition:transform .15s, box-shadow .2s }
+    .social:hover{ transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,.6) }
+    .social.ig{ color: #ff8e67; box-shadow:0 0 24px rgba(255,142,103,.12) }
+    .social.tg{ color: #2aa9ff; box-shadow:0 0 24px rgba(42,169,255,.12) }
+
+    .social .arrow{ width:26px; height:26px; transform-origin:center; animation: arrowNudge 1.6s infinite }
+    @keyframes arrowNudge{ 50%{ transform: translateX(4px) } }
+
+    .footer{ text-align:center; opacity:.72; margin-top:8px }
+
+    /* responsiveness */
+    @media (max-width:600px){ .earth .surface{ width:86% } .info-lines{ font-size:16px } }
+  </style>
+</head>
+<body>
+  <canvas id="sky"></canvas>
+  <div class="fog"></div>
+  <div class="scan"></div>
+  <div class="watermark" id="wm">K</div>
+
+  <main class="wrap center-col">
+
+    <div class="orbit-wrap" aria-hidden="false">
+      <div class="orbit-ring" aria-hidden="true"></div>
+
+      <div class="earth" aria-hidden="false">
+        <div class="surface" aria-hidden="true">
+          <!-- Clock sits centered inside earth surface -->
+          <div class="clock-in-earth" id="clock">
+            --:--:--
+            <small id="clockDay">Asia/Kolkata</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="moon-track" aria-hidden="true">
+        <div class="moon"></div>
+        <div class="moon-trail"></div>
+      </div>
+    </div>
+
+    <!-- Info panel below earth -->
+    <section class="info-panel" aria-label="Mohan Info Panel">
+      <div class="info-title">
+        <div class="dots"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
+        <div class="em em-blue" style="font-weight:700">mohan@universe •</div>
+        <div class="em" style="opacity:.85">Neon Terminal • Kairos</div>
+      </div>
+
+      <div class="info-lines" id="info">
+        <!-- Filled by JS with typing + live values -->
+      </div>
+
+      <div class="socials" aria-label="social links">
+        <a class="social ig" href="https://www.instagram.com/mohan_terminal/?hl=en" target="_blank" rel="noopener">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <radialGradient id="igGrad2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(4 20) rotate(-45) scale(28)">
+              <stop stop-color="#fd5"/><stop offset=".5" stop-color="#ff543e"/><stop offset="1" stop-color="#c837ab"/>
+            </radialGradient>
+            <path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5z" fill="url(#igGrad2)"/>
+            <rect x="6" y="6" width="12" height="12" rx="5" stroke="white" opacity=".85"/>
+            <circle cx="12" cy="12" r="3.5" stroke="#fff" stroke-width="1.2"/>
+            <circle cx="16.5" cy="7.5" r="1.2" fill="#fff"/>
+          </svg>
+          <div>@mohan_terminal</div>
+          <svg class="arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h12" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><path d="M13 6l6 6-6 6" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+
+        <a class="social tg" href="https://t.me/choji02" target="_blank" rel="noopener">
+          <svg width="22" height="22" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg"><circle cx="120" cy="120" r="120" fill="#2AABEE"/><path d="M195 69L36 128c-7 3-6 12 2 14l41 13 16 52c2 6 10 8 15 4l24-20 45 33c5 4 13 1 15-6l28-132c2-8-5-15-13-12z" fill="#fff"/></svg>
+          <div>@choji02</div>
+          <svg class="arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h12" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><path d="M13 6l6 6-6 6" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+
+      <div class="footer">Designed by <strong>Mohan Dasarath Ram</strong> &amp; <strong>Kairos</strong></div>
+    </section>
+
+  </main>
+
+  <script>
+    // ===== Constellations background canvas =====
+    (function(){
+      const c = document.getElementById('sky'), ctx = c.getContext('2d'); let W,H, stars=[]; const N = 100, linkDist = 140;
+      function resize(){ W=c.width=innerWidth; H=c.height=innerHeight; stars = Array.from({length:N}, ()=>({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*.3, vy:(Math.random()-.5)*.3, r: Math.random()*1.6+0.6 })); }
+      function step(){ ctx.clearRect(0,0,W,H); ctx.fillStyle='rgba(255,255,255,.95)';
+        for(const s of stars){ s.x+=s.vx; s.y+=s.vy; if(s.x<0||s.x>W) s.vx*=-1; if(s.y<0||s.y>H) s.vy*=-1; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill(); }
+        ctx.strokeStyle='rgba(25,255,144,.12)'; ctx.lineWidth=1;
+        for(let i=0;i<N;i++) for(let j=i+1;j<N;j++){ const a=stars[i], b=stars[j]; const dx=a.x-b.x, dy=a.y-b.y; const d=Math.hypot(dx,dy); if(d<linkDist){ ctx.globalAlpha = (1-d/linkDist)*0.9; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); ctx.globalAlpha=1; } }
+        requestAnimationFrame(step);
+      }
+      addEventListener('resize', resize, {passive:true}); resize(); step();
+    })();
+
+    // ===== Clock inside earth (IST) =====
+    const clockEl = document.getElementById('clock');
+    const clockDay = document.getElementById('clockDay');
+    const timeFmt = new Intl.DateTimeFormat('en-IN', { timeZone:'Asia/Kolkata', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true });
+    const dayFmt = new Intl.DateTimeFormat('en-IN', { timeZone:'Asia/Kolkata', weekday:'short', day:'2-digit', month:'short', year:'numeric' });
+    function tick(){ const now = new Date(); clockEl.firstChild.nodeValue = timeFmt.format(now); clockDay.textContent = dayFmt.format(now); }
+    tick(); setInterval(tick, 1000);
+
+    // ===== Moon orbit basic positioning =====
+    // Nothing else needed: CSS rotates the moon-track
+
+    // ===== Info typing with age calculation & day =====
+    const infoEl = document.getElementById('info');
+    const DOB = new Date('2009-07-25T00:00:00+05:30');
+    function calcAge(){ const now = new Date(); const nowIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })); let years = nowIST.getFullYear() - DOB.getFullYear(); const m = nowIST.getMonth() - DOB.getMonth(); const d = nowIST.getDate() - DOB.getDate(); if (m < 0 || (m===0 && d<0)) years--; return years; }
+    function getTodayStr(){ const now = new Date(); const nowIST = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })); return new Intl.DateTimeFormat('en-IN', { timeZone:'Asia/Kolkata', weekday:'short', day:'2-digit', month:'short', year:'numeric' }).format(nowIST); }
+
+    const infoLines = [
+      `<span class=\"label\">Name:</span> <span class=\"em\">Mohan Dasarath Ram</span> <span class=\"emoji glow\" style=\"color:var(--neon)\">✨</span>`,
+      `<span class=\"label\">DOB:</span> <span class=\"em-blue\">25th July 2009</span> <span class=\"emoji glow\" style=\"color:var(--orange)\">🎂</span>`,
+      `<span class=\"label\">Age:</span> <span class=\"big em-orange\" id=\"ageVal\">${calcAge()}</span> <span class=\"emoji glow\" style=\"color:var(--neon)\">⏳</span>`,
+      `<span class=\"label\">Today:</span> <span class=\"em-blue\" id=\"todayVal\">${getTodayStr()}</span> <span class=\"emoji glow\" style=\"color:var(--blue)\">📅</span>`,
+      `<span class=\"label\">Location:</span> <span class=\"em\">Vizag, India</span> <span class=\"emoji glow\" style=\"color:var(--blue)\">📍</span>`,
+      `<span class=\"label\">Status:</span> <span class=\"em-orange\">JEE 2026 Aspirant</span> <span class=\"emoji glow\" style=\"color:var(--orange)\">🔥</span>`,
+      `<span class=\"label\">Aim:</span> <span class=\"em-blue\">Space-Tech Inventor • CSE + AI + Robotics</span> <span class=\"emoji glow\" style=\"color:var(--neon)\">🚀</span> <span class=\"emoji glow\" style=\"color:var(--blue)\">🤖</span>`,
+      `<span class=\"label\">Hobbies:</span> <span class=\"em\">Anime</span> <span class=\"emoji glow\" style=\"color:var(--orange)\">🎥</span> <span class=\"em\">Coding</span> <span class=\"emoji glow\" style=\"color:var(--blue)\">💻</span> <span class=\"em\">Music</span> <span class=\"emoji glow\" style=\"color:var(--neon)\">🎶</span> <span class=\"em\">Reading</span> <span class=\"emoji glow\" style=\"color:var(--orange)\">📚</span>`
+    ];
+
+    async function typeInfo(lines){ infoEl.innerHTML = ''; for(const html of lines){ const row = document.createElement('div'); row.className='line'; const span = document.createElement('span'); row.appendChild(span); infoEl.appendChild(row);
+        // typing effect
+        const raw = html; let i=0; const speed = 12 + Math.random()*10;
+        await new Promise(resolve=>{ const tick = ()=>{ if(i<=raw.length){ span.innerHTML = raw.slice(0,i) + '<span class=\"cursor\"></span>'; i++; setTimeout(tick, speed); } else { span.innerHTML = raw; resolve(); } }; tick(); });
+        await new Promise(r=>setTimeout(r,100));
+    }
+  }
+
+    // initial type
+    (async ()=>{ await typeInfo(infoLines); })();
+
+    // update age & today every minute
+    setInterval(()=>{ const ageEl = document.getElementById('ageVal'); if(ageEl) ageEl.textContent = calcAge(); const todayEl = document.getElementById('todayVal'); if(todayEl) todayEl.textContent = getTodayStr(); }, 60*1000);
+
+    // ===== Easter egg: show K on key 'k' or long-press 3s on touch =====
+    const wm = document.getElementById('wm'); function showK(){ wm.classList.add('active'); setTimeout(()=>wm.classList.remove('active'), 3000); }
+    addEventListener('keydown', e=>{ if(e.key && e.key.toLowerCase()==='k') showK(); });
+    // mobile long press
+    let pressTimer=null; const startPress=()=>{ pressTimer = setTimeout(showK, 3000); }; const cancelPress=()=>{ if(pressTimer){ clearTimeout(pressTimer); pressTimer=null } };
+    document.addEventListener('touchstart', startPress, {passive:true}); document.addEventListener('touchend', cancelPress); document.addEventListener('touchmove', cancelPress); document.addEventListener('touchcancel', cancelPress);
+
+    // ===== small accessibility/touch nicety: social button ripple on tap =====
+    document.querySelectorAll('.social').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        // quick visual ripple by scaling
+        btn.animate([{transform:'scale(1)'},{transform:'scale(0.98)'},{transform:'scale(1)'}], {duration:320, easing:'ease-out'});
+      });
+    });
+
+    // finished
+  </script>
+</body>
+</html>
