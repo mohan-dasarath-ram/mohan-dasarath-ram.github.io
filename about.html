@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<<<<<<< HEAD
     <meta charset="UTF-8">
     <title>About Me - Mohan Dasarath Ram</title>
     <link rel="stylesheet" href="css/style.css">
@@ -23,5 +24,178 @@
             <li><strong>Preparing For:</strong> JEE 2026</li>
         </ul>
     </section>
+=======
+  <meta charset="UTF-8">
+  <title>About Me | Mohan Dasarath Ram</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/particles.min.js"></script>
+  <style>
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      margin: 40px auto 0 auto;
+      max-width: 960px;
+      align-items:center;
+    }
+    .about-avatar {
+      width: 200px;
+      height: 200px;
+      border-radius: 32% 68% 64% 36% / 41% 66% 34% 59%;
+      background: linear-gradient(135deg, #39ff14 35%, #00574f 95%);
+      box-shadow: 0 0 60px #39ff1490, 0 0 120px #008051a0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: auto;
+      animation: avatarFloat 3.8s ease-in-out infinite;
+      border: 3px solid #8DFFDD;
+      position: relative;
+    }
+    /* Replace the below with your own photo if desired */
+    .avatar-pic {
+      width: 170px;
+      height: 170px;
+      border-radius: 42% 56% 62% 37% / 50% 47% 53% 47%;
+      object-fit: cover;
+      box-shadow: 0 4px 48px #00ffae77;
+      margin: auto;
+      filter: brightness(1.03) contrast(1.08) drop-shadow(0 0 20px #39ff14d7);
+      background: #090909;
+      transition: box-shadow .3s;
+    }
+    .about-bio {
+      background: rgba(15,40,30,0.64);
+      border-radius: 22px;
+      box-shadow: 0 10px 34px #39ff1444;
+      border: 2px solid #39ff1450;
+      color: #39ff14;
+      padding: 38px 42px;
+      font-size: 1.25em;
+      font-family: 'Montserrat', 'Orbitron', sans-serif;
+      animation: fadeInUp 1.5s cubic-bezier(.6,.04,.16,.97) 0s 1;
+      position: relative;
+    }
+    .fav-actor-tile {
+      background: linear-gradient(120deg, #d0ff4ee0 40%, #002c26 86%);
+      color: #12a329;
+      font-weight: 900;
+      font-size: 1.25em;
+      border-radius: 12px;
+      margin-top: 16px;
+      margin-left: -15px;
+      display: inline-flex;
+      align-items: center;
+      padding: 11px 22px 11px 17px;
+      box-shadow: 0 0 24px #eaff32bb;
+      animation: glowActor 2.5s infinite alternate;
+      border: 2px solid #39ff1478;
+      transition: transform .2s;
+    }
+    .fav-actor-tile:hover {
+      transform: scale(1.08) rotate(-2deg);
+      box-shadow: 0 0 70px #eaff32ee;
+      color: #00ad1c;
+      border:2px solid #eaff32cc;
+    }
+    @keyframes glowActor {
+      0%,100% { box-shadow: 0 0 25px #eaff32bb; }
+      50%     { box-shadow: 0 0 45px #8dff0fe0, 0 0 85px #faffb2aa; }
+    }
+    .about-label {
+      font-weight:700; color: #A3FF73;
+      font-size: 1.09em; letter-spacing:0.5px;
+      margin-right:4px;
+    }
+    .neon-future { margin-bottom:13px; }
+    @keyframes avatarFloat {
+      0%   { transform: translateY(0);}
+      55%  { transform: translateY(-9px) scale(1.012);}
+      100% { transform: translateY(0);}
+    }
+    .facts-row {
+      display: flex; flex-wrap: wrap; gap:23px; margin-top:28px;
+    }
+    .fact-card {
+      background: rgba(62,255,14,.15);
+      border: 1.5px solid #39ff14bb;
+      border-radius: 11px;
+      box-shadow: 0 0 25px #39ff142a;
+      padding: 15px 21px;
+      font-size: 1.09em;
+      color: #39ff14;
+      font-family: 'Montserrat','Orbitron',sans-serif;
+      margin-right: 8px;
+      margin-top: 4px;
+      position:relative;
+      transition: transform .26s;
+      animation: neonPulse 2.8s infinite alternate;
+    }
+    .fact-card:hover {
+      transform: scale(1.07) rotate(-2deg);
+      box-shadow: 0 0 55px #39ff14, 0 0 110px #0f3;
+      background: #080;
+    }
+    @keyframes neonPulse {
+      from { box-shadow: 0 0 14px #39ff1452; }
+      to   { box-shadow: 0 0 38px #39ff14de; }
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <nav class="nav-glass">
+    <a href="index.html">Home</a>
+    <a href="about.html" class="active">About Me</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="crew.html">Inner Circle</a>
+  </nav>
+  <section class="hero" style="min-height:90vh;">
+    <div class="about-grid">
+      <div class="about-avatar">
+        <img src="images/yourpic.jpg" alt="Mohan's Avatar" class="avatar-pic"/>
+      </div>
+      <div class="about-bio">
+        <h2 class="neon-future">Know about my self</h2>
+        <div>
+          <span class="about-label">Name:</span> Mohan Dasarath Ram<br>
+          <span class="about-label">Date of Birth:</span> 25-07-2009 <br>
+          <span class="about-label">Age:</span> <span id="age-mohan"></span>
+        </div>
+        <div class="facts-row">
+          <div class="fact-card">Lives in Vizag, Andhra Pradesh</div>
+          <div class="fact-card">Preparing for JEE 2026</div>
+          <div class="fact-card">Interested in Space Tech</div>
+        </div>
+        <div class="fav-actor-tile" title="Inspired by Cheeyan Vikram">
+          🎬 Fav Actor: Cheeyan Vikram
+        </div>
+      </div>
+    </div>
+  </section>
+  <script src="js/main.js"></script>
+  <script>
+    // Years, months, days from DOB
+    function calcFullAge(dob, id) {
+      var dobArr = dob.split("-");
+      var birthDate = new Date(+dobArr[2], dobArr[1]-1, +dobArr[0]);
+      var now = new Date();
+      var years = now.getFullYear() - birthDate.getFullYear();
+      var months = now.getMonth() - birthDate.getMonth();
+      var days = now.getDate() - birthDate.getDate();
+      if (days < 0) {
+        months -= 1;
+        var prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+        days += prevMonth.getDate();
+      }
+      if (months < 0) {
+        years -= 1;
+        months += 12;
+      }
+      document.getElementById(id).textContent = `${years} years, ${months} months, ${days} days`;
+    }
+    calcFullAge("25-07-2009", "age-mohan");
+  </script>
+>>>>>>> a8c2056 (My futuristic website launch 🚀)
 </body>
 </html>

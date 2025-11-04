@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<<<<<<< HEAD
     <meta charset="UTF-8">
     <title>Mohan Dasarath Ram | Portfolio</title>
     <link rel="stylesheet" href="css/style.css">
@@ -17,5 +18,151 @@
         <p class="location">Lives in Vizag, Andhra Pradesh</p>
         <p class="intro">Welcome to my personal site! Explore my journey, interests in space, and digital art creations.</p>
     </section>
+=======
+  <meta charset="UTF-8">
+  <title>Home | Mohan Dasarath Ram</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/particles.min.js"></script>
+  <style>
+    .hero-home {
+      min-height:78vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      position: relative;
+      z-index:1;
+    }
+    .future-welcome {
+      font-size: 2.6em;
+      font-weight: 900;
+      color: #39ff14;
+      letter-spacing: 2px;
+      font-family: 'Orbitron', 'Montserrat', Arial, sans-serif;
+      margin-bottom: 35px;
+      text-shadow: 0 0 17px #39ff14cc, 0 0 45px #094;
+      background: linear-gradient(90deg,#1eff89 30%,#fbffb8 70%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: futurePulse 2.5s infinite alternate;
+      text-align: center;
+      position: relative;
+    }
+    @keyframes futurePulse {
+      from { text-shadow: 0 0 17px #39ff14cc, 0 0 45px #094;}
+      to   { text-shadow: 0 0 44px #fbffb8b3, 0 0 65px #39ff14ff;}
+    }
+    .neon-divider {
+      width: 64px; height: 5px;
+      margin: 0 auto 20px auto;
+      border-radius:9px;
+      background: linear-gradient(to right,#39ff14,#fff200da 50%,#39ff14 100%);
+      box-shadow: 0 0 21px #39ff148b,0 0 42px #fff20052;
+    }
+    .typewriter-welcome {
+      color: #30ffb7;
+      font-size: 1.28em;
+      letter-spacing: 1.5px;
+      text-align:center;
+      min-height:38px;
+      margin-bottom: 35px;
+      font-family: 'Montserrat', 'Orbitron', Arial,sans-serif;
+      text-shadow: 0 0 9px #39ff14;
+      animation: fadeInUp 1.3s cubic-bezier(.6,.04,.16,.97) 0s 1;
+    }
+    .bio-card {
+      margin: 0 auto;
+      max-width:377px;
+      background: rgba(12,32,24,0.62);
+      border-radius:16px;
+      box-shadow: 0 0 38px #39ff1431, 0 0 28px #fff20011;
+      border:2px solid #39ff1455;
+      backdrop-filter: blur(12px);
+      color:#39ff14;
+      padding:26px 20px;
+      font-size:1.18em;
+      font-family:'Montserrat','Orbitron',Arial,sans-serif;
+      text-align:center;
+      animation: neonPulse 3.4s infinite alternate;
+    }
+    @keyframes neonPulse {
+      from { box-shadow: 0 0 18px #39ff1455,0 0 22px #fff20022;}
+      to { box-shadow: 0 0 48px #39ff14d6,0 0 60px #fff20055;}
+    }
+    .start-btn {
+      display:inline-block;
+      margin: 45px auto 0 auto;
+      background: linear-gradient(90deg,#39ff14 45%,#fff200 80%);
+      color: #154;
+      font-size: 1.22em;
+      font-weight: bold;
+      border: none;
+      padding: 12px 44px;
+      border-radius: 21px;
+      box-shadow: 0 4px 26px #39ff14af, 0 0 51px #fff20057;
+      transition: box-shadow .22s, transform .22s;
+      cursor:pointer;
+      letter-spacing:1.5px;
+      font-family: 'Orbitron','Montserrat',Arial,sans-serif;
+      animation: fadeInUp 2.1s cubic-bezier(.69,.04,.16,.98);
+    }
+    .start-btn:hover {
+      box-shadow: 0 0 101px #fff200cc,0 0 91px #39ff14cc;
+      transform: scale(1.085);
+      background: linear-gradient(90deg,#fff9b1 45%,#39ff14 80%);
+      color: #009a18;
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <nav class="nav-glass">
+    <a href="index.html" class="active">Home</a>
+    <a href="about.html">About Me</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="crew.html">Inner Circle</a>
+  </nav>
+  <section class="hero-home">
+    <div class="future-welcome">
+      Welcome to My World
+    </div>
+    <div class="neon-divider"></div>
+    <div class="typewriter-welcome">
+      <span id="typewriter"></span>
+    </div>
+    <div class="bio-card">
+      Hey! I'm <strong>Mohan Dasarath Ram</strong> <br>
+                                         
+      Explore my journey & crew!
+    </div>
+    <a href="about.html" class="start-btn">Get Started</a>
+  </section>
+  <script src="js/main.js"></script>
+  <script>
+    // Typewriter animation for sub-welcome
+    const typeWriterText = [
+      "Aspiring Engineer. Future Hacker.",
+      "Space Tech Enthusiast.",
+      "JEE 2026 – The Mission.",
+      "Digital Art with Neon Vibes.",
+      "Scroll below. See my World."
+    ];
+    let i=0,l=0,el=document.getElementById("typewriter"),spd=44;
+    function typeWriterAnim() {
+      if(l<typeWriterText.length){
+        if(i<typeWriterText[l].length){
+          el.textContent += typeWriterText[l].charAt(i);
+          i++; setTimeout(typeWriterAnim,spd);
+        } else {
+          setTimeout(()=>{
+            el.textContent=""; l++; i=0; typeWriterAnim();
+            if(l>=typeWriterText.length) l=0;
+          }, 1200);
+        }
+      }
+    }
+    document.addEventListener('DOMContentLoaded', typeWriterAnim);
+  </script>
+>>>>>>> a8c2056 (My futuristic website launch 🚀)
 </body>
 </html>
