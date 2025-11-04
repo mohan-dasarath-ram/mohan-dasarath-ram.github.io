@@ -3,6 +3,7 @@ body {
   font-family: 'Montserrat', 'Segoe UI', sans-serif;
   min-height: 100vh;
   background: linear-gradient(135deg, #050505 0%, #340046 80%);
+  
   overflow-x: hidden;
 }
 #particles-js {
